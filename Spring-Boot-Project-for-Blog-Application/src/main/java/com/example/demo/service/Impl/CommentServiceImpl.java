@@ -70,7 +70,11 @@ public class CommentServiceImpl implements CommentService {
         Comment updateComment = commentRepository.findById(commentId).orElseThrow(
                 () -> new ResourceNotFoundException
                         ("Comment id is not found with the given id", "id", commentId));
-        if (!commentRequest.getPost().getId().equals(post.getId())) {
+//        if (updateComment.getPost() == null) {
+//            throw new BlogAPIException(HttpStatus.BAD_REQUEST, "Post with" + postId + "is not there in the Database");
+//
+//        }
+        if (!updateComment.getPost().getId().equals(post.getId())) {
             throw new BlogAPIException(HttpStatus.BAD_REQUEST, "Comment does not belong to post");
         }
         updateComment.setName(commentRequest.getName());
@@ -78,5 +82,22 @@ public class CommentServiceImpl implements CommentService {
         updateComment.setBody(commentRequest.getBody());
         Comment updatedSavedComment = commentRepository.save(updateComment);
         return updatedSavedComment;
+    }
+
+    @Override
+    public void deleteComment(long postId, long commentId) {
+        Post post = postRepository.findById(postId).orElseThrow(() ->
+                new ResourceNotFoundException("Post id is not found with the given id",
+                        "id", postId));
+        Comment updateComment = commentRepository.findById(commentId).orElseThrow(
+                () -> new ResourceNotFoundException
+                        ("Comment id is not found with the given id", "id", commentId));
+        if (!updateComment.getPost().getId().equals(post.getId())) {
+            throw new BlogAPIException(HttpStatus.BAD_REQUEST, "Comment does not belong to post");
+        }
+
+        commentRepository.delete(updateComment);
+
+
     }
 }
