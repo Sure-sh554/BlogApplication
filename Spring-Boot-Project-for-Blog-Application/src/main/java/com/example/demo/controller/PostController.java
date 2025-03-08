@@ -3,9 +3,11 @@ package com.example.demo.controller;
 import com.example.demo.entity.Post;
 
 import com.example.demo.service.PostService;
+import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -23,7 +25,8 @@ public class PostController {
 
 
     @PostMapping
-    public ResponseEntity<Post> createPost(@RequestBody Post post) {
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<Post> createPost(@Valid @RequestBody Post post) {
         Post createdPost = postService.createPost(post);
         return new ResponseEntity<>(createdPost, HttpStatus.CREATED);
     }
@@ -44,12 +47,14 @@ public class PostController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Post> updatePost(@PathVariable Long id, @RequestBody Post post) {
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<Post> updatePost(@PathVariable Long id, @Valid @RequestBody Post post) {
         Post post1 = postService.updatePost(id, post);
         return new ResponseEntity<>(post1, HttpStatus.OK);
     }
 
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<String> deletePost(@PathVariable Long id) {
         postService.deletePost(id);
         return new ResponseEntity<>("Post deleted successfully", HttpStatus.OK);
